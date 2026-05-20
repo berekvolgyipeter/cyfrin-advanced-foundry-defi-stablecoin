@@ -46,7 +46,16 @@ contract MockDSCFailedMint is MockDSC {
 contract MockDSCFailedTransfer is MockDSC {
     constructor(address initialOwner) MockDSC(initialOwner) { }
 
-    function transfer(address, /*recipient*/ uint256 /*amount*/ ) public pure override returns (bool) {
+    function transfer(
+        address,
+        /*recipient*/
+        uint256 /*amount*/
+    )
+        public
+        pure
+        override
+        returns (bool)
+    {
         return false;
     }
 }
