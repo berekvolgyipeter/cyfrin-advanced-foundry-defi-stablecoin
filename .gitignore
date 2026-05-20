@@ -22,3 +22,4 @@ lcov.info
 dependencies/
 remappings.txt
 soldeer.lock
+.claude/.code-reviews/
