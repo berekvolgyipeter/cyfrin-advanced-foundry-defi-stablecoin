@@ -6,7 +6,7 @@ libs = ["dependencies"]
 remappings = [
     "forge-std/=dependencies/forge-std-1.9.2/src/",
     "foundry-devops/=dependencies/foundry-devops-0.2.2/src/",
-    "chainlink/=dependencies/@chainlink-contracts-1.2.0/src/v0.8/",
+    "chainlink/=dependencies/smartcontractkit-chainlink-brownie-contracts-1.2.0/contracts/src/v0.8/",
     "openzeppelin/=dependencies/@openzeppelin-contracts-5.1.0/",
 ]
 fs_permissions = [{ access = "read", path = "./broadcast" }]
@@ -14,7 +14,7 @@ fs_permissions = [{ access = "read", path = "./broadcast" }]
 [dependencies]
 forge-std = { version = "1.9.2" }
 foundry-devops = { version = "0.2.2" }
-"@chainlink-contracts" = { version = "1.2.0" }
+smartcontractkit-chainlink-brownie-contracts = { version = "1.2.0" }
 "@openzeppelin-contracts" = { version = "5.1.0" }
 
 [soldeer]

@@ -38,7 +38,7 @@ coverage-lcov :; $(COVERAGE) --report lcov
 coverage-txt :; $(COVERAGE) --report debug > coverage.txt
 
 # ---------- static analysis ----------
-format-check :; forge fmt --check
+lint :; forge fmt --check
 slither-install :; python3 -m pip install slither-analyzer
 slither :; slither . --config-file slither.config.json --checklist
 
