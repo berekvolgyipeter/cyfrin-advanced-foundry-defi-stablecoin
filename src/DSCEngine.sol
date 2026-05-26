@@ -165,6 +165,7 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     /**
+     * @param amount: The amount of DSC the caller wants to burn from their own balance.
      * @notice careful! You'll burn your DSC here! Make sure you want to do this...
      * @dev you might want to use this if you're nervous you might get liquidated and want to just burn
      * your DSC but keep your collateral in.
@@ -229,6 +230,8 @@ contract DSCEngine is ReentrancyGuard {
     /**
      * @param tokenCollateralAddress: The ERC20 token address of the collateral to deposit
      * @param amountCollateral: The amount of collateral to deposit
+     * @notice Pulls `amountCollateral` of `tokenCollateralAddress` from the caller and credits it against
+     * their position. Reverts if the token is not whitelisted. Does not change DSC supply.
      */
     function depositCollateral(
         address tokenCollateralAddress,
@@ -250,7 +253,8 @@ contract DSCEngine is ReentrancyGuard {
 
     /**
      * @param amountDscToMint: The amount of DSC to mint
-     * You can only mint DSC if you have enough collateral
+     * @notice Mints `amountDscToMint` of DSC to the caller. Reverts if the resulting position would
+     * fall below `MIN_HEALTH_FACTOR` — you can only mint DSC if you have enough collateral.
      */
     function mintDsc(uint256 amountDscToMint) public moreThanZero(amountDscToMint) nonReentrant {
         s_DSCMinted[msg.sender] += amountDscToMint;
@@ -264,7 +268,7 @@ contract DSCEngine is ReentrancyGuard {
 
     /* ==================== PRIVATE FUNCTIONS ======================================== */
     /**
-     * @dev Low-level private function. Only call this if the calling functin checks for broken health factor.
+     * @dev Low-level private function. Only call this if the calling function checks for broken health factor.
      */
     function _redeemCollateral(address token, uint256 amount, address from, address to) private {
         s_collateralDeposited[from][token] -= amount;
@@ -276,7 +280,7 @@ contract DSCEngine is ReentrancyGuard {
     }
 
     /**
-     * @dev Low-level private function. Only call this if the calling functin checks for broken health factor.
+     * @dev Low-level private function. Only call this if the calling function checks for broken health factor.
      */
     function _burnDsc(uint256 amount, address onBehalfOf, address dscFrom) private {
         s_DSCMinted[onBehalfOf] -= amount;

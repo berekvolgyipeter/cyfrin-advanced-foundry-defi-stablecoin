@@ -8,8 +8,9 @@ out/
 /broadcast/Interactions.s.sol
 /broadcast/**/dry-run/
 
-# Docs
-docs/
+# Docs (forge doc output) — exceptions tracked explicitly below
+docs/*
+!docs/audit_readiness_checklist.md
 
 # Dotenv file
 .env
@@ -17,6 +18,7 @@ docs/
 report/
 coverage.txt
 lcov.info
+.gas-snapshot
 .vscode
 .DS_Store
 dependencies/

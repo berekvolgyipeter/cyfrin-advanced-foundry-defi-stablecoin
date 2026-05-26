@@ -1,8 +1,11 @@
-# Cyfrin Advanced Foundry DeFi Stablecoin (DSC)
+# Exogenously-collateralized USD stablecoin (DSC)
 
-An exogenously-collateralized, USD-pegged, algorithmically-stabilized ERC20. 1 DSC tracks 1 USD, backed by [WETH](https://coinmarketcap.com/academy/article/what-is-wrapped-ethereum-weth) and [WBTC](https://www.wbtc.network) at a 200% collateral ratio with a 10% liquidation bonus. No governance, no fees, no protocol-owned treasury — closer in spirit to single-purpose MakerDAO without DAI's surface area.
+> 1 DSC tracks 1 USD, backed by [WETH](https://coinmarketcap.com/academy/article/what-is-wrapped-ethereum-weth) and [WBTC](https://www.wbtc.network) at a 200% collateral ratio with a 10% liquidation bonus. Algorithmically stabilized — no governance, no fees, no protocol-owned treasury. Foundry unit + paired invariant suites, Slither in CI, Sepolia deployment with verified contracts.
 
-Built as the capstone of the [Cyfrin Foundry Solidity Course](https://github.com/Cyfrin/foundry-full-course-cu?tab=readme-ov-file#advanced-foundry-section-3-foundry-defi--stablecoin-the-pinnacle-project-get-here). The [original codebase](https://github.com/Cyfrin/foundry-defi-stablecoin-cu) has been audited by [CodeHawks](https://github.com/Cyfrin/foundry-defi-stablecoin-cu/blob/main/audits/codehawks-08-05-2023.md).
+[![Test](https://github.com/berekvolgyipeter/cyfrin-advanced-foundry-defi-stablecoin/actions/workflows/test.yml/badge.svg)](https://github.com/berekvolgyipeter/cyfrin-advanced-foundry-defi-stablecoin/actions/workflows/test.yml)
+[![Slither](https://github.com/berekvolgyipeter/cyfrin-advanced-foundry-defi-stablecoin/actions/workflows/slither.yml/badge.svg)](https://github.com/berekvolgyipeter/cyfrin-advanced-foundry-defi-stablecoin/actions/workflows/slither.yml)
+
+Closer in spirit to single-purpose MakerDAO without DAI's surface area.
 
 ## Protocol
 
@@ -19,6 +22,21 @@ Built as the capstone of the [Cyfrin Foundry Solidity Course](https://github.com
 Users deposit collateral and mint DSC against it. If a position's collateral value falls below 200% of its debt, other users may liquidate it by burning DSC on the user's behalf and seizing the same USD value in collateral plus an extra 10% as a bonus — this bonus is the only incentive keeping the currency collateralized, since there is no automated keeper. Self-liquidation is permitted, and a user who liquidates herself does not lose the 10% bonus to a third party.
 
 ## Architecture
+
+```mermaid
+flowchart LR
+    User([User / Liquidator])
+    Engine[DSCEngine]
+    DSC[DecentralizedStableCoin<br/>ERC20]
+    Oracle[OracleLib]
+    Chainlink[(Chainlink<br/>ETH/USD · BTC/USD)]
+
+    User -->|deposit · mint · burn · redeem · liquidate| Engine
+    Engine -->|owns · sole minter| DSC
+    Engine -.->|using OracleLib for AggregatorV3Interface| Oracle
+    Oracle -->|staleCheckLatestRoundData| Chainlink
+    Oracle -. revert on stale / zero / backwards round .-> Engine
+```
 
 Three on-chain contracts in a single ownership chain:
 
@@ -77,3 +95,7 @@ make deploy-sepolia
 ```
 
 See the [Makefile](Makefile) for the full target list (per-action interaction scripts, coverage, fork tests).
+
+## Provenance
+
+Builds on the [Cyfrin Advanced Foundry](https://github.com/Cyfrin/foundry-full-course-cu?tab=readme-ov-file#advanced-foundry-section-3-foundry-defi--stablecoin-the-pinnacle-project-get-here) teaching codebase by Patrick Collins / Cyfrin ([repo](https://github.com/Cyfrin/foundry-defi-stablecoin-cu), [CodeHawks audit](https://github.com/Cyfrin/foundry-defi-stablecoin-cu/blob/main/audits/codehawks-08-05-2023.md)), with adaptations (OpenZeppelin 5.x, solc 0.8.27, Slither hygiene) and one substantive extension: per-token decimal scaling so 8-dec WBTC and 18-dec WETH share one valuation path. The invariant suite, the failure-path mock family, and the Sepolia deployment are additions on top of the upstream contracts.
